@@ -1,20 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+import { lazy, Suspense, useState } from 'react';
 
-function App() {
-	return (
-		<div className="App">
-			<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo" />
-				<p>
-					Edit <code>src/App.js</code> and save to reload.
-				</p>
-				<a className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
-					Learn React
-				</a>
-			</header>
-		</div>
-	);
-}
+import Loading from './components/elements/Loader';
+
+import './App.scss';
+
+const TabSidebar = lazy(() => import('./components/TabSidebar'));
+
+const App = () => {
+  return (
+    <Suspense fallback={<Loading />}>
+      <div className="app">
+        <TabSidebar />
+      </div>
+    </Suspense>
+  );
+};
 
 export default App;

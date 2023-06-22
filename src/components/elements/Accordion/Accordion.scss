@@ -1,0 +1,52 @@
+$root: '.Collapsible';
+
+#{$root} {
+  &__trigger {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid transparent;
+    transition: background-color 0.2s;
+    &:hover {
+      background-color: #323435;
+      cursor: pointer;
+    }
+    &_icon {
+      flex: 1;
+      padding: 4px 2px;
+      img {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    &_content {
+      flex: 16;
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px;
+      .title {
+        font-size: 14px;
+        font-weight: 500;
+        color: #fff;
+        line-height: 25px;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        display: -webkit-box;
+        overflow: hidden;
+      }
+      .description {
+        font-size: 12px;
+        color: #b0b0b5;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        display: -webkit-box;
+        overflow: hidden;
+      }
+    }
+  }
+  &__contentInner {
+    padding: 0 0 0 12px;
+    color: #ffffff;
+  }
+}

@@ -1,0 +1,20 @@
+$root: '.rules-tab-panel';
+
+#{$root} {
+  height: calc(100% - 30px);
+  &_header {
+    padding: 14px;
+    &_title {
+      font-size: 12px;
+      color: #bbbbbb;
+      margin-bottom: 14px;
+    }
+  }
+  &_rules-tabs {
+    justify-content: space-evenly;
+  }
+  & > :last-child {
+    height: calc(100% - 113px);
+    overflow-y: scroll;
+  }
+}

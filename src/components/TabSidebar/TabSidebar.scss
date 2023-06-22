@@ -1,0 +1,24 @@
+$root: '.tabsidebar';
+
+#{$root} {
+  width: 350px;
+  height: 100%;
+  background-color: #252526;
+  &_feature-tabs {
+    &.app-tabs {
+      border: 0;
+      background-color: #1e1e1e;
+      .app-tabs_tab {
+        flex: 1;
+        font-weight: normal;
+        text-align: center;
+        border: none;
+        padding: 7px 14px;
+        margin: 0;
+        &.active {
+          background-color: #252526;
+        }
+      }
+    }
+  }
+}
