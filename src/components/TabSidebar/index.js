@@ -6,7 +6,7 @@ const Loader = lazy(() => import('../elements/Loader'));
 const Tabs = lazy(() => import('../elements/Tabs'));
 const TabPanel = lazy(() => import('../elements/TabPanel'));
 
-const RulesTabPane = lazy(() => import('../RulesTabPanel'));
+const Rules = lazy(() => import('../Rules'));
 
 const TabSidebar = () => {
   const [activeFeatureTabIndex, setActiveFeatureTabIndex] = useState(0);
@@ -23,7 +23,7 @@ const TabSidebar = () => {
           onClick={handleParentTabsOnClick}
         />
         <TabPanel value={activeFeatureTabIndex} index={0}>
-          <RulesTabPane />
+          <Rules />
         </TabPanel>
       </div>
     </Suspense>

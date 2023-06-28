@@ -1,4 +1,4 @@
-import './ActivityTab.scss';
+import './Activity.scss';
 
 const ActivityTab = () => {
   return <div />;

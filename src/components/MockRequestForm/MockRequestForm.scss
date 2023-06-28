@@ -1,0 +1,43 @@
+@import '../../styles/mixins';
+
+$root: '.request-form';
+
+#{$root} {
+  margin-top: 30px;
+  @include vertical-margin(4px);
+  &_form-field {
+    padding: 14px;
+    // border: 1px solid rgba(255, 255, 255, 0.09);
+    .creat-btn {
+      min-width: 100px;
+      margin-left: 14px;
+    }
+  }
+  .label {
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    overflow: hidden;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    border-radius: 50%;
+    &.GET {
+      background-color: #5692b3;
+    }
+    &.POST {
+      background-color: #679a73;
+    }
+    &.PUT {
+      background-color: #67c7ba;
+    }
+    &.PATCH {
+      background-color: #52988f;
+    }
+    &.DELETE {
+      background-color: #c56767;
+    }
+  }
+}

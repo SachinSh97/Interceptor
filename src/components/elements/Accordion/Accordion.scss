@@ -13,6 +13,7 @@ $root: '.Collapsible';
       cursor: pointer;
     }
     &_icon {
+      display: flex;
       flex: 1;
       padding: 4px 2px;
       img {
@@ -46,7 +47,8 @@ $root: '.Collapsible';
     }
   }
   &__contentInner {
-    padding: 0 0 0 12px;
+    margin: 0 0 0 12px;
+    border-left: 0.1px solid #49494a;
     color: #ffffff;
   }
 }

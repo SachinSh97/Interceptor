@@ -10,3 +10,16 @@
     }
   }
 }
+
+@mixin vertical-margin($margin) {
+  & > * {
+    margin-top: $margin;
+    margin-bottom: $margin;
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

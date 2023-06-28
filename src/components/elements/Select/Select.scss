@@ -1,0 +1,69 @@
+@import '../../../styles/mixins';
+$root: '.select';
+
+#{$root} {
+  position: relative;
+  .tag {
+    font-size: 8px;
+    position: absolute;
+    top: -22px;
+    right: 0;
+  }
+  &_label {
+    position: absolute;
+    top: -18px;
+    left: 0;
+    font-size: 12px;
+    font-weight: 400;
+    color: #b0b0b5;
+    text-transform: capitalize;
+  }
+  &_field {
+    &__control {
+      font-size: 14px;
+      color: #ffffff;
+      background-color: #49494a !important;
+      border: 1px solid #49494a !important;
+      box-shadow: none !important;
+    }
+    &__single-value,
+    &__input-container {
+      color: #ffffff !important;
+    }
+    &__menu {
+      font-size: 14px;
+      padding: 8px !important;
+      background-color: #1e1e1e !important;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      &-notice {
+        color: #ffffff !important;
+      }
+      &-list {
+        padding: 0 !important;
+        @include vertical-margin(4px);
+      }
+    }
+    &__option {
+      color: #bbbbbb !important;
+      &--is-focused,
+      &--is-selected {
+        border-radius: 4px;
+        color: #ffffff !important;
+        background-color: #03395e !important;
+      }
+    }
+    &__group {
+      padding: 0 !important;
+      &-heading {
+        font-weight: 600 !important;
+        padding: 8px 12px;
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  &_helper-text {
+    font-size: 10px;
+    color: #5692b3;
+  }
+}

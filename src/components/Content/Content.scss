@@ -1,0 +1,18 @@
+$root: '.content';
+
+#{$root} {
+  &_left {
+    min-width: 600px;
+    max-width: 600px;
+    overflow-x: scroll;
+  }
+  &_right {
+    min-width: 500px;
+    overflow-x: scroll;
+  }
+  .vertical-divider {
+    height: 100%;
+    width: 1px;
+    background-color: #49494a;
+  }
+}

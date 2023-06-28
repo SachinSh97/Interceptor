@@ -5,16 +5,14 @@ const Accordion = ({
   title,
   description,
   expandIcon,
-  rightIcon,
   triggerDisabled,
   transitionTime = 200,
-  rightOnClick,
+  rightContent,
   children,
+  onOpen,
+  onClose,
 }) => {
-  const handleOnRightClick = (event) => {
-    event?.stopPropagation();
-    rightOnClick(event);
-  };
+  const handleStopPropogation = (event) => event?.stopPropagation();
 
   const renderAccordionTrigger = () => (
     <>
@@ -31,19 +29,23 @@ const Accordion = ({
           </span>
         )}
       </div>
-      {rightIcon && (
-        <div className="Collapsible__trigger_icon" onClick={handleOnRightClick}>
-          <img src={rightIcon ?? ''} alt="left-icon" />
+      {rightContent && (
+        <div className="Collapsible__trigger_icon" onClick={handleStopPropogation}>
+          {rightContent}
         </div>
       )}
     </>
   );
+
   return (
     <Collapsible
       trigger={renderAccordionTrigger()}
       triggerTagName="div"
       triggerDisabled={!!children ? triggerDisabled : true}
-      transitionTime={transitionTime}>
+      transitionTime={transitionTime}
+      onOpen={onOpen}
+      onClose={onClose}
+    >
       {children}
     </Collapsible>
   );

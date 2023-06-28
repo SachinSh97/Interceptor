@@ -1,7 +1,8 @@
 $root: '.tabsidebar';
 
 #{$root} {
-  width: 350px;
+  min-width: 350px;
+  max-width: 350px;
   height: 100%;
   background-color: #252526;
   &_feature-tabs {

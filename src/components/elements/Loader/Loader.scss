@@ -1,0 +1,50 @@
+$root: '.loader';
+
+#{$root} {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  width: 100%;
+  height: 100%;
+  .overlay {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+  }
+  .icon {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    &_left {
+      width: 34px;
+      height: 34px;
+      animation: anticlockwise 5s linear infinite;
+    }
+    &_right {
+      position: absolute;
+      top: -8px;
+      left: 30px;
+      width: 28px;
+      height: 28px;
+      transform: rotate(24deg);
+      animation: clockwise 5s linear infinite;
+    }
+    @keyframes clockwise {
+      0% {
+        transform: rotate(24deg);
+      }
+      100% {
+        transform: rotate(384deg);
+      }
+    }
+    @keyframes anticlockwise {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(-360deg);
+      }
+    }
+  }
+}
