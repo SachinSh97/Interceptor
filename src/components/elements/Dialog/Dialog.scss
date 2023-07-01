@@ -3,11 +3,15 @@ $root: '.dialog';
 #{$root} {
   top: 0;
   min-width: 400px;
+  max-height: 730px;
   padding: 24px 14px 14px 14px;
-  background-color: #252526;
+  background-color: #1e1e1e;
   border: none;
-  border-radius: 0 0 4px 4px;
+  overflow: scroll;
   z-index: 2;
+  &:focus-visible {
+    outline: none;
+  }
   &_overlay {
     position: fixed;
     top: 0;

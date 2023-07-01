@@ -11,14 +11,15 @@ const Accordion = ({
   children,
   onOpen,
   onClose,
+  onTriggerOpening,
 }) => {
   const handleStopPropogation = (event) => event?.stopPropagation();
 
   const renderAccordionTrigger = () => (
     <>
       {expandIcon && (
-        <div className="Collapsible__trigger_icon">
-          <img src={expandIcon} alt="left-icon" />
+        <div className="Collapsible__trigger_left-icon">
+          <img className="left-icon" src={expandIcon} alt="left-icon" />
         </div>
       )}
       <div className="Collapsible__trigger_content">
@@ -30,7 +31,7 @@ const Accordion = ({
         )}
       </div>
       {rightContent && (
-        <div className="Collapsible__trigger_icon" onClick={handleStopPropogation}>
+        <div className="Collapsible__trigger_right-icon" onClick={handleStopPropogation}>
           {rightContent}
         </div>
       )}
@@ -45,6 +46,7 @@ const Accordion = ({
       transitionTime={transitionTime}
       onOpen={onOpen}
       onClose={onClose}
+      onTriggerOpening={onTriggerOpening}
     >
       {children}
     </Collapsible>

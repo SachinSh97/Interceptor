@@ -2,6 +2,8 @@ export const DATABASE_NAME = 'client-agent';
 
 export const DATABASE_VERSION = 1;
 
+export const prefix = 'CA';
+
 export const objectStores = {
   collections: 'collections',
   project: 'project',
@@ -13,6 +15,7 @@ export const objectStores = {
 
 export const collectionType = {
   mockRequest: 'MOCK_REQUEST',
+  apiTester: 'API_TESTER',
   redirectRequest: 'REDIRECT_REQUEST',
   cancelRequest: 'CANCEL_REQUEST',
   delayRequest: 'DELAY_REQUEST',
@@ -25,26 +28,25 @@ export const requestMenuOptions = [
   { id: 'DELETE', label: 'Delete' },
 ];
 
-export const repositoryMenuOptions = [
-  { id: 'ENABLE_ALL', label: 'Enable All' },
-  { id: 'NEW_FOLDER', label: 'New Folder' },
-  { id: 'NEW_REQUEST', label: 'New Request' },
-  { id: 'RENAME', label: 'Rename' },
-  { id: 'COPY', label: 'Copy' },
-  { id: 'PASTE', label: 'Paste' },
-  { id: 'DELETE', label: 'Delete' },
-];
+export const repositoryMenuOptions = {
+  enableAll: { id: 'ENABLE_ALL', label: 'Enable All' },
+  newFolder: { id: 'NEW_FOLDER', label: 'New Folder' },
+  newRequest: { id: 'NEW_REQUEST', label: 'New Request' },
+  rename: { id: 'RENAME', label: 'Rename' },
+  copy: { id: 'COPY', label: 'Copy' },
+  paste: { id: 'PASTE', label: 'Paste' },
+  delete: { id: 'DELETE', label: 'Delete' },
+};
 
-export const collectionMenuOptions = [
-  { id: 'ENABLE_ALL', label: 'Enable All' },
-  { id: 'SET_ENVIRONMENT', label: 'Set Environment' },
-  { id: 'NEW_PROJECT', label: 'New Project' },
-  { id: 'NEW_REQUEST', label: 'New Request' },
-  { id: 'RENAME', label: 'Rename' },
-  { id: 'COPY', label: 'Copy' },
-  { id: 'PASTE', label: 'Paste' },
-  { id: 'DELETE', label: 'Delete' },
-];
+export const collectionMenuOptions = {
+  enableAll: { id: 'ENABLE_ALL', label: 'Enable All', disabled: true },
+  setEnvironment: { id: 'SET_ENVIRONMENT', label: 'Set Environment', disabled: true },
+  newProject: { id: 'NEW_PROJECT', label: 'New Project' },
+  newRequest: { id: 'NEW_REQUEST', label: 'New Request' },
+  // copy: { id: 'COPY', label: 'Copy', disabled: true },
+  // paste: { id: 'PASTE', label: 'Paste', disabled: true },
+  delete: { id: 'DELETE_ALL', label: 'Delete All' },
+};
 
 export const methodType = [
   { value: 'GET', label: 'Get - Read' },
@@ -149,3 +151,5 @@ export const sampleResponse = `{
     roles: ['superhero'],
   },
 }`;
+
+export const defaultTargetUrl = 'https://www.google.com';

@@ -12,25 +12,23 @@ $root: '.Collapsible';
       background-color: #323435;
       cursor: pointer;
     }
-    &_icon {
-      display: flex;
-      flex: 1;
-      padding: 4px 2px;
+    &_left-icon {
+      width: 20px;
+      height: 20px;
       img {
-        width: 16px;
-        height: 16px;
+        width: 100%;
+        height: 100%;
       }
     }
     &_content {
       flex: 16;
       display: flex;
       flex-direction: column;
-      padding: 0 20px;
+      padding: 0 20px 0 14px;
       .title {
         font-size: 14px;
         font-weight: 500;
         color: #fff;
-        line-height: 25px;
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
         display: -webkit-box;
@@ -38,6 +36,7 @@ $root: '.Collapsible';
       }
       .description {
         font-size: 12px;
+        margin-top: 4px;
         color: #b0b0b5;
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
@@ -45,10 +44,18 @@ $root: '.Collapsible';
         overflow: hidden;
       }
     }
+    &_right-icon {
+      width: 16px;
+      height: 16px;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
   &__contentInner {
     margin: 0 0 0 12px;
-    border-left: 0.1px solid #49494a;
+    border-left: 1px solid rgba(255, 255, 255, 0.09);
     color: #ffffff;
   }
 }

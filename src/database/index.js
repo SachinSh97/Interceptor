@@ -154,9 +154,15 @@ export default class IndexedDBLibrary {
         try {
           const transaction = db?.transaction([storeName], 'readonly');
           const objectStore = transaction?.objectStore(storeName);
-          const index = objectStore?.index(indexName);
-          const range = IDBKeyRange?.only(value);
-          const request = index?.getAll(range);
+          let request;
+
+          if (indexName === 'id') {
+            request = objectStore?.get(value);
+          } else {
+            const index = objectStore?.index(indexName);
+            const range = IDBKeyRange?.only(value);
+            request = index?.getAll(range);
+          }
 
           request.onsuccess = (event) => {
             resolve(event?.target?.result);
@@ -194,22 +200,46 @@ export default class IndexedDBLibrary {
     });
   }
 
-  //   getByCondition(storeName, key, condition) {
-  //     return new Promise((resolve, reject) => {
-  //       try {
-  //         const transaction = this.db?.transaction([storeName], 'readonly');
-  //         const objectStore = transaction?.objectStore(storeName);
-  //         const request = objectStore?.openCursor();
+  updateByIndex(storeName, indexName, value, updatedData) {}
 
-  //         const results=[];
+  deleteByIndex(storeName, indexName, value) {
+    return this.db.then((db) => {
+      return new Promise((resolve, reject) => {
+        try {
+          const transaction = db?.transaction([storeName], 'readwrite');
+          const objectStore = transaction?.objectStore(storeName);
 
-  //         re
-
-  //       } catch (error) {
-  //         reject(error);
-  //       }
-  //     });
-  //   }
+          if (indexName === 'id') {
+            const request = objectStore?.delete(indexName);
+            request.onsuccess = () => {
+              resolve({ message: `Successfully delete ${value}` });
+            };
+            request.onerror = (event) => {
+              reject(event?.target?.error);
+            };
+          } else {
+            const index = objectStore?.index(indexName);
+            const range = IDBKeyRange?.only(value);
+            const request = index?.openCursor(range);
+            request.onsuccess = (event) => {
+              const cursor = event?.target?.result;
+              if (cursor) {
+                cursor.delete();
+                cursor.continue();
+              } else {
+                resolve();
+              }
+            };
+            request.onerror = (event) => {
+              reject(event?.target?.error);
+            };
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
+  }
 }
 
 const database = new IndexedDBLibrary();

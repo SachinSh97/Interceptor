@@ -8,12 +8,18 @@ import { sorting, compareNumber } from '../../utils/helper';
 
 import threeDotIcon from '../../assets/Icons/three-dots.svg';
 import './Collection.scss';
+import Dialog from '../elements/Dialog';
 
 const Menu = lazy(() => import('../elements/Menu'));
 const Accordion = lazy(() => import('../elements/Accordion'));
-const FolderStructure = lazy(() => import('../Repository'));
+const Repository = lazy(() => import('../Repository'));
+const FormDialog = lazy(() => import('../FormDialog'));
 
-const Collection = () => {
+const Collection = ({ requestId, setRequestId, setCollectionType }) => {
+  const [showFormDialog, setShowFormDialog] = useState(false);
+  const [parentId, setParentId] = useState('');
+  const [menuOption, setMenuOption] = useState('');
+
   const [collections, setCollections] = useState([]);
   const [mockRequests, setMockRequests] = useState([]);
   const [redirectRequests, setRedirectRequests] = useState([]);
@@ -56,12 +62,13 @@ const Collection = () => {
 
   const handleInsertAllFoldersAndRequests = async (parents) => {
     const parentPromises = parents?.map(async (parent) => {
+      let fetchedChildren = [];
       const children = await database?.getByIndex(objectStores.repository, 'parentId', parent?.id);
       const requests = await database?.getByIndex(objectStores.request, 'parentId', parent?.id);
+
       children?.forEach((child) => (child['type'] = 'repository'));
       requests?.forEach((request) => (request['type'] = 'request'));
 
-      let fetchedChildren = [];
       if (children?.length > 0) {
         fetchedChildren = await handleInsertAllFoldersAndRequests(children);
       }
@@ -73,21 +80,61 @@ const Collection = () => {
   };
 
   const handleMenuOnClick = (event, id) => {
-    const { value, syntheticEvent } = event;
+    const { value } = event;
     switch (value) {
-      case 'NEW_PROJECT':
-        // handleAddNewProject()
+      case collectionMenuOptions?.newProject?.id:
+        setParentId(id);
+        setMenuOption(value);
+        setShowFormDialog(true);
+        break;
+      case collectionMenuOptions?.newRequest?.id:
+        setParentId(id);
+        setMenuOption(value);
+        setShowFormDialog(true);
+        break;
+      case collectionMenuOptions?.delete?.id:
+        handleDelete(id);
         break;
       default:
         break;
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await database?.deleteByIndex(objectStores.project, 'parentId', id);
+      await database?.deleteByIndex(objectStores.request, 'parentId', id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFormOnSubmit = async ({ name, description }) => {
+    try {
+      const payload = { id: nanoid(), parentId, name, description };
+      if (menuOption === collectionMenuOptions?.newProject?.id) {
+        payload['type'] = 'project';
+        await database?.addOne(objectStores.project, payload);
+      } else if (menuOption === collectionMenuOptions?.newRequest?.id) {
+        payload['type'] = 'request';
+        payload['method'] = 'GET';
+        await database?.addOne(objectStores.request, payload);
+      }
+      setParentId('');
+      setMenuOption('');
+      handleCloseFormDialog();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCloseFormDialog = () => setShowFormDialog(false);
+
   const renderMenu = (menuItems, id) => (
     <Menu
       menuButton={<img src={threeDotIcon} alt="more-icon" />}
       menuItems={menuItems}
-      dividerIndices={[1, 3, 6]}
+      dividerIndices={[1, 3, 5]}
       onClick={(event) => handleMenuOnClick(event, id)}
     />
   );
@@ -101,7 +148,7 @@ const Collection = () => {
     }[type]);
 
   return (
-    <div className="collection-tab-panel">
+    <div className="collection">
       {collections?.map((collection, index) => (
         <Accordion
           key={collection?.id ?? index}
@@ -109,11 +156,23 @@ const Collection = () => {
           description={collection?.description ?? ''}
           type={collection?.type ?? ''}
           expandIcon={getCollectionIcon(collection?.type ?? '')}
-          rightContent={renderMenu(collectionMenuOptions, collection?.id)}
+          rightContent={renderMenu(Object.values(collectionMenuOptions), collection?.id)}
+          onTriggerOpening={() => setCollectionType(collection?.type ?? '')}
         >
-          <FolderStructure repositories={renderCollections(collection?.type ?? '')} />
+          <Repository
+            repositories={renderCollections(collection?.type ?? '')}
+            requestId={requestId}
+            setRequestId={setRequestId}
+          />
         </Accordion>
       ))}
+      {showFormDialog && (
+        <FormDialog
+          open={showFormDialog}
+          onSubmit={handleFormOnSubmit}
+          onClose={handleCloseFormDialog}
+        />
+      )}
     </div>
   );
 };

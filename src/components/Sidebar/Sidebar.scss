@@ -1,7 +1,11 @@
-$root: '.rules';
+$root: '.sidebar';
 
 #{$root} {
-  height: calc(100% - 30px);
+  min-width: 350px;
+  max-width: 350px;
+  height: 100%;
+  background-color: #252526;
+  overflow-y: scroll;
   &_header {
     padding: 14px;
     &_title {
@@ -13,8 +17,8 @@ $root: '.rules';
   &_rules-tabs {
     justify-content: space-evenly;
   }
-  & > :last-child {
-    height: calc(100% - 113px);
-    overflow-y: scroll;
+  .collection {
+    height: calc(100% - 140px);
+    overflow-y: auto;
   }
 }

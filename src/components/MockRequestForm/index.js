@@ -1,6 +1,8 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import classNames from 'classnames';
 
+import { objectStores, defaultTargetUrl } from '../../config';
+import { database } from '../../database';
 import {
   sampleHeader,
   sampleResponse,
@@ -17,15 +19,30 @@ const TextField = lazy(() => import('../elements/TextField'));
 const Button = lazy(() => import('../elements/Button'));
 const Select = lazy(() => import('../elements/Select'));
 
-const MockRequestForm = () => {
-  const [requestUrl, setRequestUrl] = useState('https://www.google.com');
+const MockRequestForm = ({ requestId }) => {
+  const [requestDetails, setRequestDetails] = useState({});
+  const [requestUrl, setRequestUrl] = useState(defaultTargetUrl);
   const [method, setMethod] = useState(methodType?.[0] ?? {});
   const [httpStatus, setHttpStatus] = useState(httpStatusType?.[1]?.options?.[0] ?? {});
   const [contentType, setContentType] = useState(contentTypes?.[0] ?? {});
   const [charset, setCharset] = useState(charsetTypes?.[0] ?? '');
   const [headers, setHeaders] = useState('');
   const [response, setResponse] = useState('');
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(true);
+
+  useEffect(() => {
+    handleFetchRequestDetails();
+  }, []);
+
+  const handleFetchRequestDetails = async () => {
+    try {
+      const requestDetails = await database?.getByIndex(objectStores.request, 'id', requestId);
+      setRequestUrl(requestUrl);
+      setRequestDetails(requestDetails);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleOnChange = (event) => {
     const { name, value } = event.target;
@@ -81,6 +98,7 @@ const MockRequestForm = () => {
 
   const handleSaveOnClick = () => {
     setIsSaved(true);
+    const payload = { ...requestDetails, uri: requestUrl };
   };
 
   const getOptionLabel = (option) => (
@@ -96,7 +114,7 @@ const MockRequestForm = () => {
         <div className="request-form_form-field flex ">
           <TextField
             name="requestUrl"
-            label="Request Url"
+            label="Target URL"
             isRequired={true}
             fullWidth={true}
             value={requestUrl}
@@ -104,7 +122,7 @@ const MockRequestForm = () => {
           />
           <Button
             className="creat-btn"
-            content={`Save ${!isSaved ? '*' : ''}`}
+            content={`${!isSaved ? '*' : ''} Save`}
             onClick={handleSaveOnClick}
           />
         </div>

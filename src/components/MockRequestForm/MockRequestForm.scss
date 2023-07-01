@@ -4,10 +4,10 @@ $root: '.request-form';
 
 #{$root} {
   margin-top: 30px;
+  padding: 14px;
   @include vertical-margin(4px);
   &_form-field {
     padding: 14px;
-    // border: 1px solid rgba(255, 255, 255, 0.09);
     .creat-btn {
       min-width: 100px;
       margin-left: 14px;

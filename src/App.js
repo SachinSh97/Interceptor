@@ -1,24 +1,38 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 
 import IndexedDBLibrary from './database';
-import Loading from './components/elements/Loader';
+import Loader from './components/elements/Loader';
 
 import './App.scss';
 
-const TabSidebar = lazy(() => import('./components/TabSidebar'));
+const Sidebar = lazy(() => import('./components/Sidebar'));
 const Content = lazy(() => import('./components/Content'));
 
 const App = () => {
+  const [collectionType, setCollectionType] = useState('');
+  const [requestId, setRequestId] = useState('');
+
   useEffect(() => {
     new IndexedDBLibrary();
   }, []);
+
   return (
-    <Suspense fallback={<Loading />}>
-      <div className="app">
-        <TabSidebar />
-        <Content />
-      </div>
-    </Suspense>
+    <div className="app">
+      <Suspense fallback={<Loader />}>
+        <Sidebar
+          requestId={requestId}
+          collection={collectionType}
+          setRequestId={setRequestId}
+          setCollectionType={setCollectionType}
+        />
+        <Content
+          requestId={requestId}
+          collection={collectionType}
+          setRequestId={setRequestId}
+          setCollectionType={setCollectionType}
+        />
+      </Suspense>
+    </div>
   );
 };
 

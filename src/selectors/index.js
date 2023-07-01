@@ -1,6 +1,7 @@
 import { collectionType } from '../config';
 
 import mockRequestIcon from '../assets/Icons/mock-request.svg';
+import apiTesterIcon from '../assets/Icons/api-tester.svg';
 import redirectRequestIcon from '../assets/Icons/redirect-request.svg';
 import cancelRequestIcon from '../assets/Icons/cancel-request.svg';
 import delayRequestIcon from '../assets/Icons/delay-request.svg';
@@ -13,6 +14,7 @@ export const getRequestColor = (method) =>
 export const getCollectionIcon = (type) =>
   ({
     [collectionType.mockRequest]: mockRequestIcon,
+    [collectionType.apiTester]: apiTesterIcon,
     [collectionType.redirectRequest]: redirectRequestIcon,
     [collectionType.delayRequest]: delayRequestIcon,
     [collectionType.cancelRequest]: cancelRequestIcon,

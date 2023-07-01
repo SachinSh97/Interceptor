@@ -22,8 +22,9 @@ $root: '.select';
     &__control {
       font-size: 14px;
       color: #ffffff;
-      background-color: #49494a !important;
-      border: 1px solid #49494a !important;
+      border-radius: 0 !important;
+      background-color: #2d2d2d !important;
+      border: 1px solid #2d2d2d !important;
       box-shadow: none !important;
     }
     &__single-value,
