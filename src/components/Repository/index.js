@@ -85,11 +85,7 @@ const Repository = ({ repositories, requestId, setRequestId }) => {
                   onOpen={() => handleSetOpenedFolder(repository?.id)}
                   onClose={() => handleSetOpenedFolder('')}
                 >
-                  <Repository
-                    repositories={repository?.children}
-                    requestId={requestId}
-                    setRequestId={setRequestId}
-                  />
+                  <Repository repositories={repository?.children} requestId={requestId} setRequestId={setRequestId} />
                 </Accordion>
               ),
               repository: (
@@ -101,11 +97,7 @@ const Repository = ({ repositories, requestId, setRequestId }) => {
                   onOpen={() => handleSetOpenedFolder(repository?.id)}
                   onClose={() => handleSetOpenedFolder('')}
                 >
-                  <Repository
-                    repositories={repository?.children}
-                    requestId={requestId}
-                    setRequestId={setRequestId}
-                  />
+                  <Repository repositories={repository?.children} requestId={requestId} setRequestId={setRequestId} />
                 </Accordion>
               ),
               request: (
@@ -122,11 +114,7 @@ const Repository = ({ repositories, requestId, setRequestId }) => {
         </Fragment>
       ))}
       {showFormDialog && (
-        <FormDialog
-          open={showFormDialog}
-          onSubmit={handleFormOnSubmit}
-          onClose={handleCloseFormDialog}
-        />
+        <FormDialog open={showFormDialog} onSubmit={handleFormOnSubmit} onClose={handleCloseFormDialog} />
       )}
     </>
   );

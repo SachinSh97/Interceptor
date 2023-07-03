@@ -8,7 +8,7 @@ const TabPanel = lazy(() => import('../elements/TabPanel'));
 const Button = lazy(() => import('../elements/Button'));
 const Collection = lazy(() => import('../Collection'));
 
-const SidebarTab = ({ requestId, setRequestId, setCollectionType }) => {
+const SidebarTab = ({ collectionData, requestId, setRequestId, setCollectionType }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(1);
 
   const handleTabsOnClick = (activeIndex) => setActiveTabIndex(activeIndex);
@@ -28,6 +28,7 @@ const SidebarTab = ({ requestId, setRequestId, setCollectionType }) => {
         />
         <TabPanel value={activeTabIndex} index={1}>
           <Collection
+            collectionData={collectionData}
             requestId={requestId}
             setRequestId={setRequestId}
             setCollectionType={setCollectionType}

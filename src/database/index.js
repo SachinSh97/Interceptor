@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 
 import { successCode, errorCodes, objectStores } from '../config';
 
-import { initializeCollection, fetchCollectionList } from './collection';
+import { initializeCollection, fetchCollections, fetchCollectionRequestsAndFolders } from './collection';
 
 // Singleton Pattern
 export default class IndexedDBLibrary {
@@ -246,4 +246,4 @@ export default class IndexedDBLibrary {
 
 const database = new IndexedDBLibrary();
 
-export { database, fetchCollectionList };
+export { database, fetchCollections, fetchCollectionRequestsAndFolders };
