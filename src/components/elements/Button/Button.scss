@@ -1,0 +1,15 @@
+$root: '.app-btn';
+
+#{$root} {
+  padding: 7px 14px;
+  border: none;
+  color: #ffffff;
+  background-color: #10639d;
+  cursor: pointer;
+  &.fullWidth {
+    width: 100%;
+  }
+  &:hover {
+    background-color: #1077bb;
+  }
+}

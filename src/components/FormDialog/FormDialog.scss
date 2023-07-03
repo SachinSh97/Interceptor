@@ -1,0 +1,24 @@
+@import '../../styles/mixins';
+
+$root: '.project-form';
+
+#{$root} {
+  &.dialog {
+    width: 600px;
+    small {
+      font-size: 10px;
+      color: #b0b0b5;
+      width: 100%;
+      text-align: center;
+    }
+  }
+  &_wrapper {
+    padding-top: 14px;
+    @include vertical-margin(18px);
+  }
+  &_field {
+    .textfield_input {
+      font-family: Roboto, sans-serif;
+    }
+  }
+}

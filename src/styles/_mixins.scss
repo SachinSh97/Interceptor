@@ -1,0 +1,25 @@
+@mixin horizontal-margin($margin) {
+  & > * {
+    margin-left: $margin;
+    margin-right: $margin;
+    &:first-child {
+      margin-left: 0;
+    }
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+@mixin vertical-margin($margin) {
+  & > * {
+    margin-top: $margin;
+    margin-bottom: $margin;
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

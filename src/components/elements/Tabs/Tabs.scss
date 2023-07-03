@@ -1,0 +1,23 @@
+@import '../../../styles/mixins';
+
+$root: '.app-tabs';
+
+#{$root} {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  @include horizontal-margin(8);
+  &_tab {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 2px;
+    margin: 0 18px;
+    color: #8e8e8e;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    &.active {
+      color: #ffffff;
+      border-color: #10639d;
+    }
+  }
+}

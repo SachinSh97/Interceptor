@@ -1,0 +1,26 @@
+$root: '.tag';
+
+#{$root} {
+  font-size: 10px;
+  color: #ffffff;
+  padding: 2px 4px;
+  margin-right: 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  background-color: #9ca5af;
+  &.primary {
+    background-color: #5692b3;
+  }
+  &.secondary {
+    background-color: #67c7ba;
+  }
+  &.ternary {
+    background-color: #52988f;
+  }
+  &.danger {
+    background-color: #c56767;
+  }
+  &.success {
+    background-color: #679a73;
+  }
+}

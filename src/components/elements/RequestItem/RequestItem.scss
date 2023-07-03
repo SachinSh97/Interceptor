@@ -1,0 +1,44 @@
+$root: '.request-item';
+
+#{$root} {
+  padding: 12px;
+  color: #b0b0b5;
+  transition: background-color 0.2s;
+  &:hover,
+  &.active {
+    color: #ffffff;
+    background-color: #323435;
+    cursor: pointer;
+  }
+  .title {
+    font-size: 14px;
+    font-weight: 400;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    overflow: hidden;
+  }
+  .label {
+    font-size: 10px;
+    color: #ffffff;
+    padding: 2px 4px;
+    margin-right: 6px;
+    border-radius: 4px;
+    &.PUT {
+      background-color: #67c7ba;
+    }
+  }
+  .timestamp {
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 6px;
+  }
+  .icon {
+    display: flex;
+    padding: 4px 2px;
+    img {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
