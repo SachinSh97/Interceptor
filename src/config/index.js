@@ -153,3 +153,12 @@ export const sampleResponse = `{
 }`;
 
 export const defaultTargetUrl = 'https://www.google.com';
+
+export const errorCodes = {
+  indexedDBNotSupported: 'INDEXEDDB_NOT_SUPPORTED',
+  somethingWentWrong: 'SOMETHING_WENT_WRONG',
+};
+
+export const successCode = {
+  indexedDBInitiatedSuccessfully: 'INDEXEDDB_INITIATED_SUCCESSFULLY',
+};

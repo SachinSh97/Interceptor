@@ -43,7 +43,7 @@ const Repository = ({ repositories, requestId, setRequestId }) => {
 
   const handleFormOnSubmit = async ({ name, description }) => {
     try {
-      const payload = { id: nanoid(), parentId, name, description };
+      const payload = { parentId, name, description };
       if (menuOption === repositoryMenuOptions?.newFolder?.id) {
         payload['type'] = 'project';
         await database?.addOne(objectStores.repository, payload);

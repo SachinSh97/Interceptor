@@ -5,6 +5,7 @@ import { database } from '../../database';
 import { objectStores, collectionMenuOptions, collectionType } from '../../config';
 import { getCollectionIcon } from '../../selectors';
 import { sorting, compareNumber } from '../../utils/helper';
+import { databaseInterface } from '../../IndexedDBHandler';
 
 import threeDotIcon from '../../assets/Icons/three-dots.svg';
 import './Collection.scss';
@@ -111,7 +112,7 @@ const Collection = ({ requestId, setRequestId, setCollectionType }) => {
 
   const handleFormOnSubmit = async ({ name, description }) => {
     try {
-      const payload = { id: nanoid(), parentId, name, description };
+      const payload = { parentId, name, description };
       if (menuOption === collectionMenuOptions?.newProject?.id) {
         payload['type'] = 'project';
         await database?.addOne(objectStores.project, payload);
