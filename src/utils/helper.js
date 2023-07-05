@@ -6,3 +6,7 @@ export const sorting = (data, key, compareFunction) => {
 export const compareNumber = (num1, num2) => {
   return num1 - num2;
 };
+
+export const compareTimestamp = (timestamp1, timestamp2) => {
+  return timestamp1?.localeCompare(timestamp2);
+};

@@ -91,16 +91,13 @@ export default class IndexedDBLibrary {
         const transaction = this.db?.transaction([storeName], 'readwrite');
         const objectStore = transaction?.objectStore(storeName);
 
-        const request = objectStore?.add({
-          ...data,
-          id: nanoid(),
-          timestamp: new Date().toISOString(),
-        });
+        const payload = { id: nanoid(), timestamp: new Date().toISOString(), ...data };
+        const request = objectStore?.add(payload);
 
-        request.onsuccess = (event) => {
-          const key = event?.target?.result;
-          resolve(key);
+        request.onsuccess = () => {
+          resolve(payload);
         };
+
         request.onerror = (event) => {
           reject(event?.target?.error ?? '');
         };
@@ -113,8 +110,8 @@ export default class IndexedDBLibrary {
   addAll(storeName, dataArray) {
     return new Promise((resolve, reject) => {
       try {
-        const keys = [];
         const base = 0;
+        const response = [];
         const transaction = this.db?.transaction([storeName], 'readwrite');
         const objectStore = transaction?.objectStore(storeName);
 
@@ -122,16 +119,12 @@ export default class IndexedDBLibrary {
           // Stop processing if all data entries have been processed
           if (index >= dataArray.length) return;
 
-          const data = dataArray[index];
-          const request = objectStore?.add({
-            ...data,
-            id: nanoid(),
-            timestamp: new Date().toISOString(),
-          });
+          const timestamp = new Date().toISOString();
+          const payload = { id: nanoid(), timestamp: `${timestamp.slice(0, -1)}.${index}Z`, ...dataArray?.[index] };
+          const request = objectStore?.add(payload);
 
-          request.onsuccess = (event) => {
-            const key = event.target.result;
-            keys.push(key);
+          request.onsuccess = () => {
+            response.push(payload);
             processNextData(index + 1);
           };
 
@@ -144,7 +137,7 @@ export default class IndexedDBLibrary {
         processNextData(base);
 
         transaction.oncomplete = () => {
-          resolve(keys);
+          resolve(response);
         };
 
         transaction.onerror = (event) => {

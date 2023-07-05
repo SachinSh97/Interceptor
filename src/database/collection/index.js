@@ -2,14 +2,13 @@ import { database } from '../index';
 import { fetchProjectList } from '../projects';
 import { fetchRespositoryList } from '../repository';
 import { fetchRequestList } from '../requests';
-import { objectStores, collectionType } from '../../config';
+import { objectStores } from '../../config';
 import { collections } from '../../resources';
-import { sorting, compareNumber } from '../../utils/helper';
+import { sorting, compareTimestamp } from '../../utils/helper';
 
 // use to construct initial state of collection and insert in indexedDB
 export const initializeCollection = async () => {
-  const collectionObjects = collections?.map((collection, index) => ({
-    sequence: index,
+  const collectionObjects = collections?.map((collection) => ({
     title: collection?.title ?? '',
     description: collection?.description ?? '',
     type: collection?.type,
@@ -20,7 +19,7 @@ export const initializeCollection = async () => {
 
 export const fetchCollections = async () => {
   let collections = await database?.getAll(objectStores.collections);
-  collections = sorting(collections, 'sequence', compareNumber);
+  collections = sorting(collections, 'timestamp', compareTimestamp);
   return collections;
 };
 
