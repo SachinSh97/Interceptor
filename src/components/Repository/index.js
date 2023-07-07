@@ -1,8 +1,7 @@
-import { Fragment, lazy, useState } from 'react';
-import { nanoid } from 'nanoid';
+import { Fragment, lazy, useEffect, useState, Suspense } from 'react';
 
-import { database } from '../../database';
-import { repositoryMenuOptions, requestMenuOptions, objectStores } from '../../config';
+import { insertRepository, insertRequest, fetchRespositoryList, fetchRequestList } from '../../database';
+import { repositoryMenuOptions, requestMenuOptions } from '../../config';
 
 import openFolderIcon from '../../assets/Icons/open-folder.svg';
 import closeFolderIcon from '../../assets/Icons/close-folder.svg';
@@ -10,54 +9,36 @@ import threeDotIcon from '../../assets/Icons/three-dots.svg';
 
 import './Repository.scss';
 
+const Loader = lazy(() => import('../elements/Loader'));
 const Menu = lazy(() => import('../elements/Menu'));
 const Accordion = lazy(() => import('../elements/Accordion'));
 const RequestItem = lazy(() => import('../elements/RequestItem'));
 const FormDialog = lazy(() => import('../FormDialog'));
 
-const Repository = ({ repositories, requestId, setRequestId }) => {
+const Repository = ({ parentId }) => {
+  const [repositories, setRepositories] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [selectedRepository, setSelectedRepository] = useState('');
   const [showFormDialog, setShowFormDialog] = useState(false);
-  const [parentId, setParentId] = useState('');
-  const [openedFolder, setOpenedFolder] = useState('');
-  const [menuOption, setMenuOption] = useState('');
 
-  const handleSetOpenedFolder = (folder) => setOpenedFolder(folder);
+  useEffect(() => {
+    handleFetchRepositoryAndRequests();
+  }, []);
 
-  const handleMenuOnClick = (event, id) => {
-    const { value } = event;
-    switch (value) {
-      case repositoryMenuOptions?.newFolder?.id:
-        setParentId(id);
-        setMenuOption(value);
-        setShowFormDialog(true);
-        break;
-      case repositoryMenuOptions?.newRequest?.id:
-        setParentId(id);
-        setMenuOption(value);
-        setShowFormDialog(true);
-        break;
-      default:
-        break;
-    }
+  const handleFetchRepositoryAndRequests = () => {
+    Promise.all([fetchRespositoryList(parentId), fetchRequestList(parentId)])
+      .then(([draftRepositories, draftRequests]) => {
+        setRepositories(draftRepositories);
+        setRequests(draftRequests);
+      })
+      .catch((errorResponse) => {});
   };
 
-  const handleFormOnSubmit = async ({ name, description }) => {
-    try {
-      const payload = { parentId, name, description };
-      if (menuOption === repositoryMenuOptions?.newFolder?.id) {
-        payload['type'] = 'project';
-        await database?.addOne(objectStores.repository, payload);
-      } else if (menuOption === repositoryMenuOptions?.newRequest?.id) {
-        payload['type'] = 'request';
-        payload['method'] = 'GET';
-        await database?.addOne(objectStores.request, payload);
-      }
-      setMenuOption('');
-      handleCloseFormDialog();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const handleAccordionStateChange = (id) => setSelectedRepository(id);
+
+  const handleMenuOnClick = (event, id) => {};
+
+  const handleFormOnSubmit = async ({ name, description }) => {};
 
   const handleCloseFormDialog = () => setShowFormDialog(false);
 
@@ -71,52 +52,27 @@ const Repository = ({ repositories, requestId, setRequestId }) => {
   );
 
   return (
-    <>
-      {repositories?.map((repository, index) => (
-        <Fragment key={repository?.id ?? index}>
-          {
-            {
-              project: (
-                <Accordion
-                  title={repository?.name}
-                  description={repository?.description ?? ''}
-                  expandIcon={openedFolder === repository?.id ? openFolderIcon : closeFolderIcon}
-                  rightContent={renderMenu(Object.values(repositoryMenuOptions), repository?.id)}
-                  onOpen={() => handleSetOpenedFolder(repository?.id)}
-                  onClose={() => handleSetOpenedFolder('')}
-                >
-                  <Repository repositories={repository?.children} requestId={requestId} setRequestId={setRequestId} />
-                </Accordion>
-              ),
-              repository: (
-                <Accordion
-                  title={repository?.name}
-                  description={repository?.description ?? ''}
-                  expandIcon={openedFolder === repository?.id ? openFolderIcon : closeFolderIcon}
-                  rightContent={renderMenu(Object.values(repositoryMenuOptions), repository?.id)}
-                  onOpen={() => handleSetOpenedFolder(repository?.id)}
-                  onClose={() => handleSetOpenedFolder('')}
-                >
-                  <Repository repositories={repository?.children} requestId={requestId} setRequestId={setRequestId} />
-                </Accordion>
-              ),
-              request: (
-                <RequestItem
-                  title={repository?.name}
-                  method={repository?.method}
-                  active={repository?.id === requestId}
-                  rightContent={renderMenu(requestMenuOptions)}
-                  onClick={() => setRequestId(repository?.id)}
-                />
-              ),
-            }[repository?.type]
-          }
-        </Fragment>
+    <Suspense fallback={<Loader />}>
+      {repositories?.map((repository) => (
+        <Accordion
+          key={repository?.id}
+          title={repository?.name}
+          description={repository?.description ?? ''}
+          expandIcon={selectedRepository === repository?.id ? openFolderIcon : closeFolderIcon}
+          rightContent={renderMenu(Object.values(repositoryMenuOptions), repository?.id)}
+          onOpen={() => handleAccordionStateChange(repository?.id)}
+          onClose={() => handleAccordionStateChange('')}
+        >
+          <Repository parentId={repository?.id} />
+        </Accordion>
+      ))}
+      {requests?.map((request) => (
+        <RequestItem key={request?.id} title={request?.name} method={request?.method} />
       ))}
       {showFormDialog && (
         <FormDialog open={showFormDialog} onSubmit={handleFormOnSubmit} onClose={handleCloseFormDialog} />
       )}
-    </>
+    </Suspense>
   );
 };
 

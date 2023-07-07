@@ -1,6 +1,6 @@
 import { lazy, useState } from 'react';
 
-import { database } from '../../database';
+import { database, insertProject } from '../../database';
 import { objectStores, collectionMenuOptions } from '../../config';
 import { getCollectionIcon } from '../../selectors';
 
@@ -9,10 +9,10 @@ import './Collection.scss';
 
 const Menu = lazy(() => import('../elements/Menu'));
 const Accordion = lazy(() => import('../elements/Accordion'));
-const Repository = lazy(() => import('../Repository'));
+const Projects = lazy(() => import('../Projects'));
 const FormDialog = lazy(() => import('../FormDialog'));
 
-const Collection = ({ collectionData, requestId, setRequestId, setCollectionType }) => {
+const Collection = ({ requestId, setRequestId, collectionData, setCollectionType }) => {
   const [showFormDialog, setShowFormDialog] = useState(false);
   const [parentId, setParentId] = useState('');
   const [menuOption, setMenuOption] = useState('');
@@ -55,11 +55,8 @@ const Collection = ({ collectionData, requestId, setRequestId, setCollectionType
     try {
       const payload = { parentId, name, description };
       if (menuOption === collectionMenuOptions?.newProject?.id) {
-        payload['type'] = 'project';
-        await database?.addOne(objectStores.project, payload);
+        const response = await insertProject(payload);
       } else if (menuOption === collectionMenuOptions?.newRequest?.id) {
-        payload['type'] = 'request';
-        payload['method'] = 'GET';
         await database?.addOne(objectStores.request, payload);
       }
       setParentId('');
@@ -93,7 +90,7 @@ const Collection = ({ collectionData, requestId, setRequestId, setCollectionType
           rightContent={renderMenu(Object.values(collectionMenuOptions), collection?.id)}
           onTriggerOpening={() => handleOnTriggerOpening(collection?.type ?? '')}
         >
-          <Repository repositories={collection?.children ?? []} requestId={requestId} setRequestId={setRequestId} />
+          <Projects parentId={collection?.id ?? ''} />
         </Accordion>
       ))}
       {showFormDialog && (

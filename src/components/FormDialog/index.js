@@ -5,7 +5,7 @@ import './FormDialog.scss';
 const Dialog = lazy(() => import('../elements/Dialog'));
 const TextField = lazy(() => import('../elements/TextField'));
 
-const FormDialog = ({ open = true, onSubmit, onClose }) => {
+const FormDialog = ({ type, onSubmit, onClose }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
@@ -38,13 +38,7 @@ const FormDialog = ({ open = true, onSubmit, onClose }) => {
   };
 
   return (
-    <Dialog
-      className="project-form"
-      open={open}
-      hideCloseIcon={true}
-      onClose={onClose}
-      onKeyDown={handleOnKeyDown}
-    >
+    <Dialog className="project-form" open={!!type} hideCloseIcon={true} onClose={onClose} onKeyDown={handleOnKeyDown}>
       <div className="project-form_wrapper flex flex-column">
         <div className="project-form_field">
           <TextField

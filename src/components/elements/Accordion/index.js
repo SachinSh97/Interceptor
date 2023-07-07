@@ -2,6 +2,7 @@ import Collapsible from 'react-collapsible';
 import './Accordion.scss';
 
 const Accordion = ({
+  id,
   title,
   description,
   expandIcon,
@@ -44,13 +45,20 @@ const Accordion = ({
       triggerTagName="div"
       triggerDisabled={!!children ? triggerDisabled : true}
       transitionTime={transitionTime}
-      onOpen={onOpen}
-      onClose={onClose}
-      onTriggerOpening={onTriggerOpening}
+      onOpen={() => onOpen(id)}
+      onClose={() => onClose(id)}
+      onTriggerOpening={() => onTriggerOpening(id)}
     >
       {children}
     </Collapsible>
   );
+};
+
+Accordion.defaultProps = {
+  id: '',
+  onOpen: () => {},
+  onClose: () => {},
+  onTriggerOpening: () => {},
 };
 
 export default Accordion;

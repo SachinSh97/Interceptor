@@ -3,6 +3,9 @@ import { nanoid } from 'nanoid';
 import { successCode, errorCodes, objectStores } from '../config';
 
 import { initializeCollection, fetchCollections, fetchCollectionRequestsAndFolders } from './collection';
+import { fetchProjectList, insertProject, deleteProject } from './projects';
+import { fetchRespositoryList, insertRepository, deleteRepository } from './repository';
+import { fetchRequestList, insertRequest, deleteRequest } from './requests';
 
 // Singleton Pattern
 export default class IndexedDBLibrary {
@@ -239,4 +242,17 @@ export default class IndexedDBLibrary {
 
 const database = new IndexedDBLibrary();
 
-export { database, fetchCollections, fetchCollectionRequestsAndFolders };
+export {
+  database,
+  fetchProjectList,
+  fetchRespositoryList,
+  fetchRequestList,
+  insertProject,
+  insertRepository,
+  insertRequest,
+  deleteProject,
+  deleteRepository,
+  deleteRequest,
+  fetchCollections,
+  fetchCollectionRequestsAndFolders,
+};
