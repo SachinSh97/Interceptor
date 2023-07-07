@@ -1,38 +1,41 @@
-import { lazy, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 
-import { database, insertProject } from '../../database';
-import { objectStores, collectionMenuOptions } from '../../config';
+import { insertProject, fetchCollections, insertRequest, deleteProjects, deleteRequests } from '../../database';
+import { collectionMenuOptions } from '../../config';
 import { getCollectionIcon } from '../../selectors';
 
 import threeDotIcon from '../../assets/Icons/three-dots.svg';
 import './Collection.scss';
 
+const Loader = lazy(() => import('../elements/Loader'));
 const Menu = lazy(() => import('../elements/Menu'));
 const Accordion = lazy(() => import('../elements/Accordion'));
 const Projects = lazy(() => import('../Projects'));
 const FormDialog = lazy(() => import('../FormDialog'));
 
-const Collection = ({ requestId, setRequestId, collectionData, setCollectionType }) => {
-  const [showFormDialog, setShowFormDialog] = useState(false);
+const Collection = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [collections, setCollections] = useState([]);
   const [parentId, setParentId] = useState('');
-  const [menuOption, setMenuOption] = useState('');
+  const [refreshCollectionCount, setRefreshCollectionCount] = useState(0);
+  const [formDialogType, setFormDialogType] = useState('');
 
-  const handleOnTriggerOpening = (selectedCollectionType) => {
-    setCollectionType(selectedCollectionType);
-  };
+  useEffect(() => {
+    handleFetchCollection();
+  }, []);
+
+  const handleFetchCollection = () =>
+    fetchCollections()
+      .then((draftCollections) => setCollections(draftCollections))
+      .catch((errorResponse) => console.log(errorResponse))
+      .finally(() => setIsLoading(false));
 
   const handleMenuOnClick = (event, id) => {
-    const { value } = event;
-    switch (value) {
+    switch (event?.value) {
       case collectionMenuOptions?.newProject?.id:
-        setParentId(id);
-        setMenuOption(value);
-        setShowFormDialog(true);
-        break;
       case collectionMenuOptions?.newRequest?.id:
         setParentId(id);
-        setMenuOption(value);
-        setShowFormDialog(true);
+        setFormDialogType(event?.value);
         break;
       case collectionMenuOptions?.delete?.id:
         handleDelete(id);
@@ -42,32 +45,30 @@ const Collection = ({ requestId, setRequestId, collectionData, setCollectionType
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await database?.deleteByIndex(objectStores.project, 'parentId', id);
-      await database?.deleteByIndex(objectStores.request, 'parentId', id);
-    } catch (error) {
-      console.log(error);
-    }
+  const handleDelete = (id) => {
+    setIsLoading(true);
+    Promise.all([deleteProjects('parentId', id), deleteRequests('parentId', id)])
+      .then(() => setRefreshCollectionCount(refreshCollectionCount + 1))
+      .catch((errorResponse) => console.log(errorResponse))
+      .finally(() => setIsLoading(false));
   };
 
   const handleFormOnSubmit = async ({ name, description }) => {
     try {
       const payload = { parentId, name, description };
-      if (menuOption === collectionMenuOptions?.newProject?.id) {
-        const response = await insertProject(payload);
-      } else if (menuOption === collectionMenuOptions?.newRequest?.id) {
-        await database?.addOne(objectStores.request, payload);
-      }
-      setParentId('');
-      setMenuOption('');
+      const insertHandler = formDialogType === collectionMenuOptions?.newProject?.id ? insertProject : insertRequest;
+      await insertHandler(payload);
       handleCloseFormDialog();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleCloseFormDialog = () => setShowFormDialog(false);
+  const handleCloseFormDialog = () => {
+    setParentId('');
+    setFormDialogType('');
+    setRefreshCollectionCount(refreshCollectionCount + 1);
+  };
 
   const renderMenu = (menuItems, id) => (
     <Menu
@@ -79,24 +80,26 @@ const Collection = ({ requestId, setRequestId, collectionData, setCollectionType
   );
 
   return (
-    <div className="collection">
-      {collectionData?.map((collection, index) => (
-        <Accordion
-          key={collection?.id ?? index}
-          title={collection?.title ?? ''}
-          description={collection?.description ?? ''}
-          type={collection?.type ?? ''}
-          expandIcon={getCollectionIcon(collection?.type ?? '')}
-          rightContent={renderMenu(Object.values(collectionMenuOptions), collection?.id)}
-          onTriggerOpening={() => handleOnTriggerOpening(collection?.type ?? '')}
-        >
-          <Projects parentId={collection?.id ?? ''} />
-        </Accordion>
-      ))}
-      {showFormDialog && (
-        <FormDialog open={showFormDialog} onSubmit={handleFormOnSubmit} onClose={handleCloseFormDialog} />
-      )}
-    </div>
+    <Suspense fallback={<Loader />}>
+      <div className="collection">
+        {isLoading && <Loader />}
+        {collections?.map((collection, index) => (
+          <Accordion
+            key={collection?.id ?? index}
+            title={collection?.title ?? ''}
+            description={collection?.description ?? ''}
+            type={collection?.type ?? ''}
+            expandIcon={getCollectionIcon(collection?.type ?? '')}
+            rightContent={renderMenu(Object.values(collectionMenuOptions), collection?.id)}
+          >
+            <Projects parentId={collection?.id ?? ''} refreshCollectionCount={refreshCollectionCount} />
+          </Accordion>
+        ))}
+        {!!formDialogType && (
+          <FormDialog type={formDialogType} onSubmit={handleFormOnSubmit} onClose={handleCloseFormDialog} />
+        )}
+      </div>
+    </Suspense>
   );
 };
 

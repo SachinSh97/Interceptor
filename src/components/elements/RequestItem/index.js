@@ -7,18 +7,18 @@ import './RequestItem.scss';
 
 const Tag = lazy(() => import('../Tag'));
 
-const RequestItem = ({ title, active, method, timestamp, rightContent, onClick }) => {
+const RequestItem = ({ name, active, method, timestamp, rightContent, onClick }) => {
   const handleStopPropogation = (event) => event?.stopPropagation();
   return (
     <div
       className={classNames('request-item flex align-center justify-between', { active })}
-      title={title}
+      title={name}
       onClick={onClick}
     >
       <span className="flex flex-column">
         <span className="flex align-center">
           <Tag type={getRequestColor(method ?? '')} content={method ?? ''} />
-          <span className="title">{title ?? ''}</span>
+          <span className="title">{name ?? ''}</span>
         </span>
         {timestamp && <span className="timestamp">{timestamp}</span>}
       </span>

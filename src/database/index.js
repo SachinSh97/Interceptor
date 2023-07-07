@@ -3,9 +3,9 @@ import { nanoid } from 'nanoid';
 import { successCode, errorCodes, objectStores } from '../config';
 
 import { initializeCollection, fetchCollections, fetchCollectionRequestsAndFolders } from './collection';
-import { fetchProjectList, insertProject, deleteProject } from './projects';
+import { fetchProjectList, insertProject, deleteProjects } from './projects';
 import { fetchRespositoryList, insertRepository, deleteRepository } from './repository';
-import { fetchRequestList, insertRequest, deleteRequest } from './requests';
+import { fetchRequestList, insertRequest, deleteRequests } from './requests';
 
 // Singleton Pattern
 export default class IndexedDBLibrary {
@@ -200,8 +200,6 @@ export default class IndexedDBLibrary {
     });
   }
 
-  updateByIndex(storeName, indexName, value, updatedData) {}
-
   deleteByIndex(storeName, indexName, value) {
     return new Promise((resolve, reject) => {
       try {
@@ -209,8 +207,8 @@ export default class IndexedDBLibrary {
         const objectStore = transaction?.objectStore(storeName);
 
         if (indexName === 'id') {
-          const request = objectStore?.delete(indexName);
-          request.onsuccess = () => {
+          const request = objectStore?.delete(value);
+          request.onsuccess = (event) => {
             resolve({ message: `Successfully delete ${value}` });
           };
           request.onerror = (event) => {
@@ -250,9 +248,9 @@ export {
   insertProject,
   insertRepository,
   insertRequest,
-  deleteProject,
+  deleteProjects,
   deleteRepository,
-  deleteRequest,
+  deleteRequests,
   fetchCollections,
   fetchCollectionRequestsAndFolders,
 };

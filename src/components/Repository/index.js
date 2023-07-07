@@ -1,6 +1,6 @@
 import { Fragment, lazy, useEffect, useState, Suspense } from 'react';
 
-import { insertRepository, insertRequest, fetchRespositoryList, fetchRequestList } from '../../database';
+import { insertRequest, fetchRespositoryList, fetchRequestList, deleteRequests } from '../../database';
 import { repositoryMenuOptions, requestMenuOptions } from '../../config';
 
 import openFolderIcon from '../../assets/Icons/open-folder.svg';
@@ -16,14 +16,15 @@ const RequestItem = lazy(() => import('../elements/RequestItem'));
 const FormDialog = lazy(() => import('../FormDialog'));
 
 const Repository = ({ parentId }) => {
+  const [isLoading, setIsLoading] = useState(true);
   const [repositories, setRepositories] = useState([]);
   const [requests, setRequests] = useState([]);
-  const [selectedRepository, setSelectedRepository] = useState('');
-  const [showFormDialog, setShowFormDialog] = useState(false);
+  const [formParentId, setFormParentId] = useState('');
+  const [formDialogType, setFormDialogType] = useState('');
 
   useEffect(() => {
     handleFetchRepositoryAndRequests();
-  }, []);
+  }, [parentId]);
 
   const handleFetchRepositoryAndRequests = () => {
     Promise.all([fetchRespositoryList(parentId), fetchRequestList(parentId)])
@@ -31,16 +32,47 @@ const Repository = ({ parentId }) => {
         setRepositories(draftRepositories);
         setRequests(draftRequests);
       })
-      .catch((errorResponse) => {});
+      .catch((errorResponse) => {})
+      .finally(() => setIsLoading(false));
   };
 
-  const handleAccordionStateChange = (id) => setSelectedRepository(id);
+  const handleFormOnSubmit = async ({ name, description }) => {
+    try {
+      const payload = { parentId: formParentId, name, description };
+      await insertRequest(payload);
+      handleCloseFormDialog();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  const handleMenuOnClick = (event, id) => {};
+  const handleDeleteRequest = (id) => {
+    setIsLoading(true);
+    deleteRequests('id', id)
+      .then(() => handleFetchRepositoryAndRequests())
+      .catch((error) => console.log(error))
+      .finally(() => setIsLoading(false));
+  };
 
-  const handleFormOnSubmit = async ({ name, description }) => {};
+  const handleCloseFormDialog = () => {
+    setFormParentId('');
+    setFormDialogType('');
+    handleFetchRepositoryAndRequests();
+  };
 
-  const handleCloseFormDialog = () => setShowFormDialog(false);
+  const handleMenuOnClick = (event, detail) => {
+    switch (event?.value) {
+      case repositoryMenuOptions.newRequest.id:
+        setFormParentId(detail?.id);
+        setFormDialogType(event?.value);
+        break;
+      case repositoryMenuOptions.delete.id:
+        handleDeleteRequest(detail?.id);
+        break;
+      default:
+        break;
+    }
+  };
 
   const renderMenu = (menuItems, id) => (
     <Menu
@@ -53,24 +85,28 @@ const Repository = ({ parentId }) => {
 
   return (
     <Suspense fallback={<Loader />}>
+      {isLoading && <Loader />}
       {repositories?.map((repository) => (
         <Accordion
           key={repository?.id}
           title={repository?.name}
           description={repository?.description ?? ''}
-          expandIcon={selectedRepository === repository?.id ? openFolderIcon : closeFolderIcon}
-          rightContent={renderMenu(Object.values(repositoryMenuOptions), repository?.id)}
-          onOpen={() => handleAccordionStateChange(repository?.id)}
-          onClose={() => handleAccordionStateChange('')}
+          expandIcon={openFolderIcon}
+          shrinkIcon={closeFolderIcon}
+          rightContent={renderMenu(Object.values(repositoryMenuOptions), repository)}
         >
           <Repository parentId={repository?.id} />
         </Accordion>
       ))}
       {requests?.map((request) => (
-        <RequestItem key={request?.id} title={request?.name} method={request?.method} />
+        <RequestItem
+          key={request?.id}
+          {...request}
+          rightContent={renderMenu(Object.values(requestMenuOptions), request)}
+        />
       ))}
-      {showFormDialog && (
-        <FormDialog open={showFormDialog} onSubmit={handleFormOnSubmit} onClose={handleCloseFormDialog} />
+      {!!formDialogType && (
+        <FormDialog type={formDialogType} onSubmit={handleFormOnSubmit} onClose={handleCloseFormDialog} />
       )}
     </Suspense>
   );

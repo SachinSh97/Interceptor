@@ -32,6 +32,8 @@ export const fetchCollectionRequestsAndFolders = async (collectionId) => {
   return [...projects, ...requests];
 };
 
+export const deleteCollectionData = async (collectionId) => {};
+
 /** Helpers Functions **/
 const handleInsertAllFoldersAndRequests = async (parents) => {
   const parentPromises = parents?.map(async (parent) => {

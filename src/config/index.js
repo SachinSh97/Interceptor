@@ -21,21 +21,30 @@ export const collectionType = {
   delayRequest: 'DELAY_REQUEST',
 };
 
-export const requestMenuOptions = [
-  { id: 'ENABLE', label: 'Enable' },
-  { id: 'RENAME', label: 'Rename' },
-  { id: 'COPY', label: 'Copy' },
-  { id: 'DELETE', label: 'Delete' },
-];
+export const requestMenuOptions = {
+  enable: { id: 'ENABLE', label: 'Enable' },
+  rename: { id: 'RENAME', label: 'Rename' },
+  copy: { id: 'COPY', label: 'Copy' },
+  delete: { id: 'DELETE_REQUEST', label: 'Delete' },
+};
 
 export const repositoryMenuOptions = {
+  enableAll: { id: 'ENABLE_ALL', label: 'Enable All' },
+  newRequest: { id: 'NEW_REQUEST', label: 'New Request' },
+  rename: { id: 'RENAME', label: 'Rename' },
+  copy: { id: 'COPY', label: 'Copy' },
+  paste: { id: 'PASTE', label: 'Paste' },
+  delete: { id: 'DELETE_FOLDER', label: 'Delete Folder' },
+};
+
+export const projectMenuOptions = {
   enableAll: { id: 'ENABLE_ALL', label: 'Enable All' },
   newFolder: { id: 'NEW_FOLDER', label: 'New Folder' },
   newRequest: { id: 'NEW_REQUEST', label: 'New Request' },
   rename: { id: 'RENAME', label: 'Rename' },
   copy: { id: 'COPY', label: 'Copy' },
   paste: { id: 'PASTE', label: 'Paste' },
-  delete: { id: 'DELETE', label: 'Delete' },
+  delete: { id: 'DELETE_PROJECT', label: 'Delete Project' },
 };
 
 export const collectionMenuOptions = {
@@ -45,7 +54,7 @@ export const collectionMenuOptions = {
   newRequest: { id: 'NEW_REQUEST', label: 'New Request' },
   // copy: { id: 'COPY', label: 'Copy', disabled: true },
   // paste: { id: 'PASTE', label: 'Paste', disabled: true },
-  delete: { id: 'DELETE_ALL', label: 'Delete All' },
+  delete: { id: 'DELETE_ALL', label: 'Empty Collection' },
 };
 
 export const methodType = [
