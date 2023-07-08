@@ -16,9 +16,9 @@ const FormDialog = lazy(() => import('../FormDialog'));
 const Collection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [collections, setCollections] = useState([]);
-  const [parentId, setParentId] = useState('');
-  const [refreshCollectionCount, setRefreshCollectionCount] = useState(0);
+  const [parentCollectionId, setParentCollectionId] = useState('');
   const [formDialogType, setFormDialogType] = useState('');
+  const [refresh, setRefresh] = useState(true);
 
   useEffect(() => {
     handleFetchCollection();
@@ -34,7 +34,7 @@ const Collection = () => {
     switch (event?.value) {
       case collectionMenuOptions?.newProject?.id:
       case collectionMenuOptions?.newRequest?.id:
-        setParentId(id);
+        setParentCollectionId(id);
         setFormDialogType(event?.value);
         break;
       case collectionMenuOptions?.delete?.id:
@@ -48,14 +48,14 @@ const Collection = () => {
   const handleDelete = (id) => {
     setIsLoading(true);
     Promise.all([deleteProjects('parentId', id), deleteRequests('parentId', id)])
-      .then(() => setRefreshCollectionCount(refreshCollectionCount + 1))
+      .then(() => setRefresh(!refresh))
       .catch((errorResponse) => console.log(errorResponse))
       .finally(() => setIsLoading(false));
   };
 
   const handleFormOnSubmit = async ({ name, description }) => {
     try {
-      const payload = { parentId, name, description };
+      const payload = { parentId: parentCollectionId, name, description };
       const insertHandler = formDialogType === collectionMenuOptions?.newProject?.id ? insertProject : insertRequest;
       await insertHandler(payload);
       handleCloseFormDialog();
@@ -65,9 +65,9 @@ const Collection = () => {
   };
 
   const handleCloseFormDialog = () => {
-    setParentId('');
+    setParentCollectionId('');
     setFormDialogType('');
-    setRefreshCollectionCount(refreshCollectionCount + 1);
+    setRefresh(!refresh);
   };
 
   const renderMenu = (menuItems, id) => (
@@ -92,12 +92,14 @@ const Collection = () => {
             expandIcon={getCollectionIcon(collection?.type ?? '')}
             rightContent={renderMenu(Object.values(collectionMenuOptions), collection?.id)}
           >
-            <Projects parentId={collection?.id ?? ''} refreshCollectionCount={refreshCollectionCount} />
+            <Projects parentId={collection?.id ?? ''} reloadProjects={refresh} />
           </Accordion>
         ))}
-        {!!formDialogType && (
-          <FormDialog type={formDialogType} onSubmit={handleFormOnSubmit} onClose={handleCloseFormDialog} />
-        )}
+        <Suspense fallback={<Loader />}>
+          {!!formDialogType && (
+            <FormDialog type={formDialogType} onSubmit={handleFormOnSubmit} onClose={handleCloseFormDialog} />
+          )}
+        </Suspense>
       </div>
     </Suspense>
   );

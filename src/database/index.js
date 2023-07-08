@@ -209,7 +209,7 @@ export default class IndexedDBLibrary {
         if (indexName === 'id') {
           const request = objectStore?.delete(value);
           request.onsuccess = (event) => {
-            resolve({ message: `Successfully delete ${value}` });
+            resolve([value]);
           };
           request.onerror = (event) => {
             reject(event?.target?.error);
@@ -218,13 +218,15 @@ export default class IndexedDBLibrary {
           const index = objectStore?.index(indexName);
           const range = IDBKeyRange?.only(value);
           const request = index?.openCursor(range);
+          const response = [];
           request.onsuccess = (event) => {
             const cursor = event?.target?.result;
             if (cursor) {
+              response?.push(cursor?.value?.id);
               cursor.delete();
               cursor.continue();
             } else {
-              resolve();
+              resolve(response);
             }
           };
           request.onerror = (event) => {

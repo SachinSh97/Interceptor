@@ -1,7 +1,7 @@
-import { Fragment, lazy, useEffect, useState, Suspense } from 'react';
+import { lazy, useEffect, useState, Suspense } from 'react';
 
-import { insertRequest, fetchRespositoryList, fetchRequestList, deleteRequests } from '../../database';
-import { repositoryMenuOptions, requestMenuOptions } from '../../config';
+import { insertRequest, fetchRespositoryList, deleteRequests } from '../../database';
+import { repositoryMenuOptions } from '../../config';
 
 import openFolderIcon from '../../assets/Icons/open-folder.svg';
 import closeFolderIcon from '../../assets/Icons/close-folder.svg';
@@ -12,33 +12,31 @@ import './Repository.scss';
 const Loader = lazy(() => import('../elements/Loader'));
 const Menu = lazy(() => import('../elements/Menu'));
 const Accordion = lazy(() => import('../elements/Accordion'));
-const RequestItem = lazy(() => import('../elements/RequestItem'));
 const FormDialog = lazy(() => import('../FormDialog'));
+const Requests = lazy(() => import('../Requests'));
 
-const Repository = ({ parentId }) => {
+const Repository = ({ parentId, reloadRepository }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [repositories, setRepositories] = useState([]);
-  const [requests, setRequests] = useState([]);
-  const [formParentId, setFormParentId] = useState('');
+  const [parentRepositoryId, setParentRepositoryId] = useState('');
   const [formDialogType, setFormDialogType] = useState('');
+  const [refresh, setRefresh] = useState(true);
 
   useEffect(() => {
-    handleFetchRepositoryAndRequests();
-  }, [parentId]);
+    if (!parentId) return;
+    handleFetchRepository();
+  }, [parentId, reloadRepository]);
 
-  const handleFetchRepositoryAndRequests = () => {
-    Promise.all([fetchRespositoryList(parentId), fetchRequestList(parentId)])
-      .then(([draftRepositories, draftRequests]) => {
-        setRepositories(draftRepositories);
-        setRequests(draftRequests);
-      })
-      .catch((errorResponse) => {})
+  const handleFetchRepository = () => {
+    fetchRespositoryList(parentId)
+      .then((draftRepositories) => setRepositories(draftRepositories))
+      .catch((errorResponse) => console.log(errorResponse))
       .finally(() => setIsLoading(false));
   };
 
   const handleFormOnSubmit = async ({ name, description }) => {
     try {
-      const payload = { parentId: formParentId, name, description };
+      const payload = { parentId: parentRepositoryId, name, description };
       await insertRequest(payload);
       handleCloseFormDialog();
     } catch (error) {
@@ -49,21 +47,21 @@ const Repository = ({ parentId }) => {
   const handleDeleteRequest = (id) => {
     setIsLoading(true);
     deleteRequests('id', id)
-      .then(() => handleFetchRepositoryAndRequests())
+      .then(() => handleFetchRepository())
       .catch((error) => console.log(error))
       .finally(() => setIsLoading(false));
   };
 
   const handleCloseFormDialog = () => {
-    setFormParentId('');
+    setParentRepositoryId('');
     setFormDialogType('');
-    handleFetchRepositoryAndRequests();
+    setRefresh(!refresh);
   };
 
   const handleMenuOnClick = (event, detail) => {
     switch (event?.value) {
       case repositoryMenuOptions.newRequest.id:
-        setFormParentId(detail?.id);
+        setParentRepositoryId(detail?.id);
         setFormDialogType(event?.value);
         break;
       case repositoryMenuOptions.delete.id:
@@ -95,19 +93,15 @@ const Repository = ({ parentId }) => {
           shrinkIcon={closeFolderIcon}
           rightContent={renderMenu(Object.values(repositoryMenuOptions), repository)}
         >
-          <Repository parentId={repository?.id} />
+          <Requests parentId={repository?.id} reloadRequest={refresh} />
         </Accordion>
       ))}
-      {requests?.map((request) => (
-        <RequestItem
-          key={request?.id}
-          {...request}
-          rightContent={renderMenu(Object.values(requestMenuOptions), request)}
-        />
-      ))}
-      {!!formDialogType && (
-        <FormDialog type={formDialogType} onSubmit={handleFormOnSubmit} onClose={handleCloseFormDialog} />
-      )}
+      <Requests parentId={parentId} reloadRequest={refresh} />
+      <Suspense fallback={<Loader />}>
+        {!!formDialogType && (
+          <FormDialog type={formDialogType} onSubmit={handleFormOnSubmit} onClose={handleCloseFormDialog} />
+        )}
+      </Suspense>
     </Suspense>
   );
 };

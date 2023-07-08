@@ -1,6 +1,7 @@
 import { database } from '..';
 import { objectStores } from '../../config';
 import { sorting, compareTimestamp } from '../../utils/helper';
+import { deleteRepository } from '../repository';
 
 export const insertProject = async (payload) => {
   return await database?.addOne(objectStores.project, { ...payload, type: 'project' });
@@ -13,5 +14,9 @@ export const fetchProjectList = async (parentId) => {
 };
 
 export const deleteProjects = async (indexName, indexValue) => {
-  return await database?.deleteByIndex(objectStores.project, indexName, indexValue);
+  const deletedProjects = await database?.deleteByIndex(objectStores.project, indexName, indexValue);
+  debugger;
+  const promises = deletedProjects?.map((projectId) => deleteRepository('parentId', projectId));
+  await Promise.all(promises);
+  return deletedProjects;
 };
