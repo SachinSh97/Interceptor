@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 
-import { successCode, errorCodes, objectStores } from '../config';
+import { successCode, errorCodes, objectStores, DATABASE_NAME, DATABASE_VERSION } from '../config';
 
 import { initializeCollection, fetchCollections, fetchCollectionRequestsAndFolders } from './collection';
 import { fetchProjectList, insertProject, deleteProjects } from './projects';
@@ -242,8 +242,13 @@ export default class IndexedDBLibrary {
 
 const database = new IndexedDBLibrary();
 
+const initializeDatabase = async () => {
+  return await database.openDBConnect(DATABASE_NAME, DATABASE_VERSION);
+};
+
 export {
   database,
+  initializeDatabase,
   fetchProjectList,
   fetchRespositoryList,
   fetchRequestList,

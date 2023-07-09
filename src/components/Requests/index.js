@@ -1,7 +1,8 @@
-import { useState, lazy, useEffect, Suspense } from 'react';
+import { useState, lazy, useEffect, Suspense, useContext } from 'react';
 
 import { requestMenuOptions } from '../../config';
-import { deleteRequests, fetchRequestList, insertRequest } from '../../database';
+import { deleteRequests, fetchRequestList } from '../../database';
+import { ApplicationDataContext } from '../../context';
 
 import threeDotIcon from '../../assets/Icons/three-dots.svg';
 
@@ -10,6 +11,8 @@ const Menu = lazy(() => import('../elements/Menu'));
 const RequestItem = lazy(() => import('../elements/RequestItem'));
 
 const Requests = ({ parentId, reloadRequest }) => {
+  const { applicationData, setApplicationData } = useContext(ApplicationDataContext);
+
   const [isLoading, setIsLoading] = useState(true);
   const [requests, setRequests] = useState([]);
 
@@ -64,8 +67,10 @@ const Requests = ({ parentId, reloadRequest }) => {
       {requests?.map((requestDetail) => (
         <RequestItem
           key={requestDetail?.id}
+          active={applicationData?.request?.id === requestDetail?.id}
           requestDetail={requestDetail}
           rightContent={renderMenu(Object.values(requestMenuOptions), requestDetail)}
+          onClick={() => setApplicationData({ type: 'request', request: requestDetail })}
         />
       ))}
     </Suspense>

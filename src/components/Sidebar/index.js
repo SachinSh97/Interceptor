@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useState } from 'react';
 
 import './Sidebar.scss';
 
@@ -8,7 +8,7 @@ const TabPanel = lazy(() => import('../elements/TabPanel'));
 const Button = lazy(() => import('../elements/Button'));
 const Collection = lazy(() => import('../Collection'));
 
-const SidebarTab = ({ collectionData, requestId, setRequestId, setCollectionType }) => {
+const SidebarTab = () => {
   const [activeTabIndex, setActiveTabIndex] = useState(1);
 
   const handleTabsOnClick = (activeIndex) => setActiveTabIndex(activeIndex);
@@ -27,12 +27,7 @@ const SidebarTab = ({ collectionData, requestId, setRequestId, setCollectionType
           onClick={handleTabsOnClick}
         />
         <TabPanel value={activeTabIndex} index={1}>
-          <Collection
-            collectionData={collectionData}
-            requestId={requestId}
-            setRequestId={setRequestId}
-            setCollectionType={setCollectionType}
-          />
+          <Collection />
         </TabPanel>
       </div>
     </Suspense>

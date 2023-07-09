@@ -1,8 +1,9 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState, useContext } from 'react';
 
 import { insertProject, fetchCollections, insertRequest, deleteProjects, deleteRequests } from '../../database';
 import { collectionMenuOptions } from '../../config';
 import { getCollectionIcon } from '../../selectors';
+import { ApplicationDataContext } from '../../context';
 
 import threeDotIcon from '../../assets/Icons/three-dots.svg';
 import './Collection.scss';
@@ -14,6 +15,8 @@ const Projects = lazy(() => import('../Projects'));
 const FormDialog = lazy(() => import('../FormDialog'));
 
 const Collection = () => {
+  const { setApplicationData } = useContext(ApplicationDataContext);
+
   const [isLoading, setIsLoading] = useState(true);
   const [collections, setCollections] = useState([]);
   const [parentCollectionId, setParentCollectionId] = useState('');
@@ -91,6 +94,7 @@ const Collection = () => {
             type={collection?.type ?? ''}
             expandIcon={getCollectionIcon(collection?.type ?? '')}
             rightContent={renderMenu(Object.values(collectionMenuOptions), collection?.id)}
+            onTriggerOpening={() => setApplicationData({ type: 'collection', collection })}
           >
             <Projects parentId={collection?.id ?? ''} reloadProjects={refresh} />
           </Accordion>

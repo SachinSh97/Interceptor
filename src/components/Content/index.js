@@ -1,7 +1,9 @@
-import { lazy, useState, Suspense, Fragment, useEffect } from 'react';
+import { lazy, useState, Suspense, Fragment, useEffect, useContext } from 'react';
 
 import { database } from '../../database';
 import { prefix, objectStores, collectionType } from '../../config';
+import { ApplicationDataContext } from '../../context';
+
 import closeIcon from '../../assets/Icons/close-icon.svg';
 import './Content.scss';
 
@@ -9,7 +11,9 @@ const Loader = lazy(() => import('../elements/Loader'));
 const Tabs = lazy(() => import('../elements/Tabs'));
 const MockRequestForm = lazy(() => import('../MockRequestForm'));
 
-const Content = ({ requestId, collection, setRequestId }) => {
+const Content = () => {
+  const { applicationData, setApplicationData } = useContext(ApplicationDataContext);
+
   const [openedRequests, setOpenedRequests] = useState([]);
   const [activeTabIndex, setActiveTabIndex] = useState(-1);
 
@@ -17,29 +21,27 @@ const Content = ({ requestId, collection, setRequestId }) => {
     const handleUpdateOpenedRequestTabs = async (requestId) => {
       const requestDetails = await database?.getByIndex(objectStores.request, 'id', requestId);
       const draftOpenedRequests = [...openedRequests, requestDetails];
-      const draftActiveTabIndex = draftOpenedRequests?.findIndex(
-        (openRequest) => openRequest?.id === requestId,
-      );
+      const draftActiveTabIndex = draftOpenedRequests?.findIndex((openRequest) => openRequest?.id === requestId);
 
       setActiveTabIndex(draftActiveTabIndex);
       setOpenedRequests(draftOpenedRequests);
     };
 
-    if (requestId) {
-      if (!openedRequests?.some((openedRequest) => openedRequest?.id === requestId)) {
-        handleUpdateOpenedRequestTabs(requestId);
+    if (applicationData?.request?.id) {
+      if (!openedRequests?.some((openedRequest) => openedRequest?.id === applicationData?.request?.id)) {
+        handleUpdateOpenedRequestTabs(applicationData?.request?.id);
       } else {
         const draftActiveTabIndex = openedRequests?.findIndex(
-          (openRequest) => openRequest?.id === requestId,
+          (openRequest) => openRequest?.id === applicationData?.request?.id,
         );
         setActiveTabIndex(draftActiveTabIndex);
       }
     }
-  }, [requestId]);
+  }, [applicationData?.request]);
 
   const handleTabOnClick = (updatedTabindex) => {
     setActiveTabIndex(updatedTabindex);
-    setRequestId(openedRequests?.[updatedTabindex]?.id ?? '');
+    setApplicationData({ type: 'request', request: openedRequests?.[updatedTabindex] ?? {} });
   };
 
   const handleCloseOpenedTab = (event, id) => {
@@ -48,7 +50,7 @@ const Content = ({ requestId, collection, setRequestId }) => {
     const draftOpenedRequests = openedRequests?.filter((openRequest) => openRequest?.id !== id);
     setActiveTabIndex(index - 1);
     setOpenedRequests(draftOpenedRequests);
-    setRequestId(draftOpenedRequests?.[index]?.id ?? '');
+    setApplicationData({ type: 'request', request: draftOpenedRequests?.[index] ?? {} });
   };
 
   const getOpenTabs = () =>
@@ -70,8 +72,8 @@ const Content = ({ requestId, collection, setRequestId }) => {
       <div className="flex content">
         <div className="content_left">
           <Tabs tabs={getOpenTabs()} activeTabIndex={activeTabIndex} onClick={handleTabOnClick} />
-          {collection === collectionType?.mockRequest && activeTabIndex > -1 && (
-            <MockRequestForm requestId={requestId} />
+          {applicationData?.collection?.type === collectionType?.mockRequest && activeTabIndex > -1 && (
+            <MockRequestForm requestId={applicationData?.request?.id} />
           )}
         </div>
         <div className="vertical-divider" />
