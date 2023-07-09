@@ -2,10 +2,17 @@ $root: '.app-btn';
 
 #{$root} {
   padding: 7px 14px;
-  border: none;
+  border: 1px solid #10639d;
   color: #ffffff;
   background-color: #10639d;
   cursor: pointer;
+  &.secondary {
+    color: #10639d;
+    background-color: transparent;
+    &:hover {
+      background-color: #252526;
+    }
+  }
   &.fullWidth {
     width: 100%;
   }

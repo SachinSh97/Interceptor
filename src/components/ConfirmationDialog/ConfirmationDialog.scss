@@ -1,0 +1,17 @@
+@import '../../styles/mixins';
+
+$root: '.confirmation-dialog';
+
+#{$root} {
+  &_content {
+    font-size: 14px;
+    color: #ffffff;
+  }
+  &_footer {
+    margin-top: 24px;
+    @include horizontal-margin(7px);
+    .app-btn {
+      min-width: 120px;
+    }
+  }
+}

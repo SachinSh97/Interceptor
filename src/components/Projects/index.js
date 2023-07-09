@@ -10,15 +10,17 @@ const Loader = lazy(() => import('../elements/Loader'));
 const Menu = lazy(() => import('../elements/Menu'));
 const Accordion = lazy(() => import('../elements/Accordion'));
 const Repository = lazy(() => import('../Repository'));
-const FormDialog = lazy(() => import('../FormDialog'));
 const Requests = lazy(() => import('../Requests'));
+const FormDialog = lazy(() => import('../FormDialog'));
+const ConfirmationDialog = lazy(() => import('../ConfirmationDialog'));
 
 const Projects = ({ parentId, reloadProjects }) => {
   const [refresh, setRefresh] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [projects, setProjects] = useState([]);
-  const [parentProjectId, setParentProjectId] = useState('');
+  const [parentProject, setParentProject] = useState({});
   const [formDialogType, setFormDialogType] = useState('');
+  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
 
   useEffect(() => {
     if (!parentId) return;
@@ -31,15 +33,19 @@ const Projects = ({ parentId, reloadProjects }) => {
       .catch((errorResponse) => console.log(errorResponse))
       .finally(() => setIsLoading(false));
 
+  const handleCloseConfirmationDialog = () => {
+    setShowConfirmationDialog(false);
+  };
+
   const handleCloseFormDialog = () => {
     setRefresh(!refresh);
     setFormDialogType('');
-    setParentProjectId('');
+    setParentProject({});
   };
 
   const handleFormOnSubmit = async ({ name, description }) => {
     try {
-      const payload = { parentId: parentProjectId, name, description };
+      const payload = { parentId: parentProject?.id, name, description };
       const insertHandler = formDialogType === 'NEW_FOLDER' ? insertRepository : insertRequest;
       await insertHandler(payload);
       handleCloseFormDialog();
@@ -48,10 +54,13 @@ const Projects = ({ parentId, reloadProjects }) => {
     }
   };
 
-  const handleDeleteProject = (id) => {
+  const handleOnConfirmDeleteProject = () => {
     setIsLoading(true);
-    deleteProjects('id', id)
-      .then(() => handleFetchProjects())
+    deleteProjects('id', parentProject?.id)
+      .then(() => {
+        handleCloseConfirmationDialog();
+        handleFetchProjects();
+      })
       .catch((error) => console.log(error))
       .finally(() => setIsLoading(false));
   };
@@ -60,11 +69,12 @@ const Projects = ({ parentId, reloadProjects }) => {
     switch (event?.value ?? '') {
       case projectMenuOptions.newFolder.id:
       case projectMenuOptions.newRequest.id:
-        setParentProjectId(detail?.id);
+        setParentProject(detail);
         setFormDialogType(event?.value);
         break;
       case projectMenuOptions.delete.id:
-        handleDeleteProject(detail?.id);
+        setParentProject(detail);
+        setShowConfirmationDialog(true);
         break;
       default:
         break;
@@ -98,6 +108,14 @@ const Projects = ({ parentId, reloadProjects }) => {
       <Suspense fallback={<Loader />}>
         {!!formDialogType && (
           <FormDialog type={formDialogType} onSubmit={handleFormOnSubmit} onClose={handleCloseFormDialog} />
+        )}
+        {showConfirmationDialog && (
+          <ConfirmationDialog
+            open={showConfirmationDialog}
+            content={`Are you sure you want to delete '${parentProject?.name}' project ?`}
+            onClose={handleCloseConfirmationDialog}
+            onConfirm={handleOnConfirmDeleteProject}
+          />
         )}
       </Suspense>
     </Suspense>

@@ -15,7 +15,6 @@ export const fetchProjectList = async (parentId) => {
 
 export const deleteProjects = async (indexName, indexValue) => {
   const deletedProjects = await database?.deleteByIndex(objectStores.project, indexName, indexValue);
-  debugger;
   const promises = deletedProjects?.map((projectId) => deleteRepository('parentId', projectId));
   await Promise.all(promises);
   return deletedProjects;
